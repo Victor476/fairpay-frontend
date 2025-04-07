@@ -4,6 +4,7 @@ FairPay é uma aplicação web que facilita o controle de despesas em grupo. Com
 "Divida as contas. Não as amizades 😄"
 
 🛠️ Tecnologias utilizadas (Frontend)
+
 Next.js
 
 React
