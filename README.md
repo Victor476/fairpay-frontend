@@ -1,57 +1,142 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
 
-## Getting Started
+# FairPay Frontend
 
-First, run the development server:
+## Visão Geral
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+FairPay Frontend é uma aplicação web desenvolvida com Next.js que proporciona interface intuitiva para gerenciar despesas compartilhadas entre grupos de pessoas. A aplicação se integra com o backend Spring Boot para fornecer uma experiência completa de gerenciamento de finanças compartilhadas.
+
+## Tecnologias
+
+- **Next.js 14+**: Framework React com renderização híbrida
+- **TypeScript**: Tipagem estática para desenvolvimento robusto
+- **TailwindCSS**: Framework CSS utilitário
+- **Axios**: Cliente HTTP para comunicação com API
+- **JWT**: Autenticação baseada em tokens
+- **React Hook Form**: Gerenciamento de formulários
+- **Zustand**: Gerenciamento de estado global
+
+## Funcionalidades da Interface
+
+- **Autenticação**
+  - Login e registro de usuários
+  - Recuperação de senha
+  - Autenticação persistente
+
+- **Dashboard**
+  - Visão geral de dívidas e créditos
+  - Resumo de atividades recentes
+  - Estatísticas e gráficos
+
+- **Gerenciamento de Grupos**
+  - Criação e edição de grupos
+  - Convite de membros via link
+  - Visualização de membros
+
+- **Despesas**
+  - Adição de novas despesas
+  - Divisão personalizada
+  - Filtros e categorização
+
+- **Pagamentos**
+  - Registro de pagamentos
+  - Histórico de transações
+  - Confirmação de recebimentos
+
+- **Balanços**
+  - Visualização de dívidas otimizadas
+  - Histórico de transações
+  - Relatórios exportáveis
+
+## Configuração Local
+
+### Pré-requisitos
+
+- Node.js 18+ 
+- npm ou yarn
+- Backend configurado e em execução
+
+### Executando Localmente
+
+1. Clone o repositório
+   ```bash
+   git clone https://github.com/seu-usuario/fairpay.git
+   cd fairpay/fairpay-frontend
+   ```
+
+2. Instale as dependências
+   ```bash
+   npm install
+   # ou
+   yarn install
+   ```
+
+3. Configure as variáveis de ambiente
+   ```bash
+   cp .env.example .env.local
+   ```
+
+   Edite `.env.local` e defina:
+   ```
+   NEXT_PUBLIC_API_URL=http://localhost:8090/api
+   ```
+
+4. Inicie o servidor de desenvolvimento
+   ```bash
+   npm run dev
+   # ou
+   yarn dev
+   ```
+
+5. A aplicação estará disponível em `http://localhost:3000`
+
+## Configuração Docker
+
+A aplicação pode ser executada usando Docker. Consulte o README principal na raiz do projeto para instruções detalhadas sobre Docker.
+
+## Estrutura de Arquivos
+
+```
+fairpay-frontend/
+├── public/           # Arquivos estáticos
+├── src/
+│   ├── components/   # Componentes reutilizáveis
+│   ├── contexts/     # Context API para gerenciamento de estado
+│   ├── hooks/        # React hooks personalizados
+│   ├── lib/          # Funções utilitárias e configurações
+│   ├── pages/        # Rotas e páginas da aplicação
+│   ├── services/     # Serviços para comunicação com API
+│   ├── styles/       # Estilos globais e configuração do TailwindCSS
+│   └── types/        # Definições de tipos TypeScript
+└── ...               # Arquivos de configuração
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Desenvolvimento
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+### Convenções de Código
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+- Componentes funcionais com TypeScript
+- Hooks para lógica reutilizável
+- Componentes atômicos para interface
+- Padrão de página e layout
 
-## Learn More
+### Responsividade
 
-To learn more about Next.js, take a look at the following resources:
+A aplicação foi desenvolvida seguindo o princípio mobile-first, garantindo uma experiência consistente em dispositivos móveis e desktop.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+### Internacionalização
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+Suporte para múltiplos idiomas utilizando o framework i18n (quando aplicável).
 
-## Deploy on Vercel
+## Integração com Backend
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+O frontend se comunica com o backend Spring Boot através de endpoints RESTful, com autenticação JWT e refresh tokens para manter a sessão do usuário.
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## Contribuições
 
-## 💸 FairPay – Dashboard de Despesas Compartilhadas (Frontend)
-FairPay é uma aplicação web que facilita o controle de despesas em grupo. Com uma interface intuitiva desenvolvida em Next.js, os usuários podem registrar gastos, dividir valores automaticamente entre participantes e acompanhar saldos e pagamentos de forma clara e justa.
+Contribuições são bem-vindas! Por favor, siga os padrões de código e adicione testes para novas funcionalidades.
 
-"Divida as contas. Não as amizades 😄"
+## Licença
 
-🛠️ Tecnologias utilizadas (Frontend)
+Este projeto está licenciado sob a Licença MIT.
+EOF
 
-Next.js
-
-React
-
-TypeScript
-
-Axios
-
-TailwindCSS
-
-Context API ou Zustand (para gerenciamento de estado, se necessário)
-
-JWT
