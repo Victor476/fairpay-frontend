@@ -20,24 +20,13 @@ export interface User {
 
 export const authService = {
   login: async (credentials: LoginRequest): Promise<LoginResponse> => {
-    console.log('authService.login: Iniciando login...');
-    
     const response = await fetchPublicApi('/api/auth/login', {
       method: 'POST',
       body: JSON.stringify(credentials),
     });
     
-    console.log('authService.login: Resposta do login:', response);
-    console.log('authService.login: Access Token:', response.accessToken?.substring(0, 20) + '...');
-    console.log('authService.login: Refresh Token:', response.refreshToken?.substring(0, 20) + '...');
-    
     // Salvar tokens no localStorage
     tokenUtils.setTokens(response.accessToken, response.refreshToken);
-    
-    // Verificar se foi salvo corretamente
-    const savedToken = tokenUtils.getAccessToken();
-    console.log('authService.login: Token salvo:', savedToken?.substring(0, 20) + '...');
-    console.log('authService.login: Token é válido?', savedToken ? !tokenUtils.isTokenExpired(savedToken) : false);
     
     return response;
   },

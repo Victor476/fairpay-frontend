@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from 'react';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import { useAuth } from '@/contexts/AuthContext';
 import Button from '@/components/ui/Button';
@@ -17,6 +17,7 @@ export default function LoginForm() {
   const [isLoading, setIsLoading] = useState(false);
   const { login } = useAuth();
   const router = useRouter();
+  const searchParams = useSearchParams();
 
   const validateForm = () => {
     const newErrors: Record<string, string> = {};
@@ -45,19 +46,28 @@ export default function LoginForm() {
 
     try {
       await login(formData.email, formData.password);
-      router.push('/groups'); // Redirecionar para a página de grupos após login
+      
+      // Verificar se há um redirect parameter
+      const redirectTo = searchParams.get('redirect');
+      if (redirectTo) {
+        router.push(decodeURIComponent(redirectTo));
+      } else {
+        router.push('/groups'); // Redirecionar para a página de grupos após login
+      }
     } catch (error: any) {
       console.error('Erro no login:', error);
       
       // Tratar diferentes tipos de erro
-      if (error.message.includes('401')) {
+      if (error.message === 'NETWORK_ERROR' || error.message === 'BACKEND_OFFLINE') {
+        setErrors({ general: 'Não foi possível conectar com o servidor. Verifique sua conexão e tente novamente.' });
+      } else if (error.message.includes('401')) {
         setErrors({ general: 'Credenciais inválidas. Verifique seu e-mail e senha.' });
       } else if (error.message.includes('404')) {
         setErrors({ general: 'Conta não encontrada. Verifique seu e-mail ou cadastre-se.' });
       } else if (error.message.includes('500')) {
         setErrors({ general: 'Erro no servidor. Tente novamente mais tarde.' });
       } else {
-        setErrors({ general: 'Erro ao fazer login. Tente novamente.' });
+        setErrors({ general: 'Erro ao fazer login. Verifique sua conexão e tente novamente.' });
       }
     } finally {
       setIsLoading(false);

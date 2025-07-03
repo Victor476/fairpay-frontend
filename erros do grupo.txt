@@ -1,0 +1,218 @@
+TypeError: Failed to fetch
+
+src\lib\api.ts (103:43) @ eval
+
+
+  101 |       try {
+  102 |         console.log(`Tentativa ${attempt}/${maxRetries}`);
+> 103 |         const response = await globalThis.fetch(url, fetchOptions);
+      |                                           ^
+  104 |         
+  105 |         console.log(`Resposta recebida: ${response.status} ${response.statusText}`);
+  106 |         console.log('Response headers:', Object.fromEntries(response.headers.entries()));
+Call Stack
+4
+
+eval
+src\lib\api.ts (103:43)
+
+Console Error
+
+
+Erro ao buscar usuário do backend: "NETWORK_ERROR"
+
+src\lib\api.ts (237:13) @ fetchCurrentUser
+
+
+  235 |     return await fetchApi('/api/users/me');
+  236 |   } catch (error: any) {
+> 237 |     console.error('Erro ao buscar usuário do backend:', error.message);
+      |             ^
+  238 |     console.error('Tipo do erro:', error.name);
+  239 |     console.error('Erro completo:', error);
+  240 |     
+Call Stack
+6
+
+Show 3 ignore-listed frame(s)
+fetchCurrentUser
+src\lib\api.ts (237:13)
+
+Console Error
+
+
+Tipo do erro: "Error"
+
+src\lib\api.ts (238:13) @ fetchCurrentUser
+
+
+  236 |   } catch (error: any) {
+  237 |     console.error('Erro ao buscar usuário do backend:', error.message);
+> 238 |     console.error('Tipo do erro:', error.name);
+      |             ^
+  239 |     console.error('Erro completo:', error);
+  240 |     
+  241 |     // Se erro de autorização, limpar tokens
+Call Stack
+6
+
+Show 3 ignore-listed frame(s)
+fetchCurrentUser
+src\lib\api.ts (238:13)
+async login
+src\contexts\AuthContext.tsx (72:27)
+async handleSubmit
+src\components\auth\LoginForm.tsx (47:7)
+
+Error: NETWORK_ERROR
+
+src\lib\api.ts (156:13) @ eval
+
+
+  154 |     // Verificar se é um erro de rede
+  155 |     if (error.name === 'TypeError' && (error.message.includes('fetch failed') || error.message.includes('Failed to fetch'))) {
+> 156 |       throw new Error("NETWORK_ERROR");
+      |             ^
+  157 |     }
+  158 |     
+  159 |     throw error;
+Call Stack
+4
+
+eval
+src\lib\api.ts (156:13)
+async fetchCurrentUser
+src\lib\api.ts (235:12)
+async login
+src\contexts\AuthContext.tsx (72:27)
+async handleSubmit
+src\components\auth\LoginForm.tsx (47:7)
+
+Console Error
+
+
+TypeError: Failed to fetch
+
+src\lib\api.ts (103:43) @ eval
+
+
+  101 |       try {
+  102 |         console.log(`Tentativa ${attempt}/${maxRetries}`);
+> 103 |         const response = await globalThis.fetch(url, fetchOptions);
+      |                                           ^
+  104 |         
+  105 |         console.log(`Resposta recebida: ${response.status} ${response.statusText}`);
+  106 |         console.log('Response headers:', Object.fromEntries(response.headers.entries()));
+Call Stack
+3
+
+eval
+src\lib\api.ts (103:43)
+async fetchUserGroups
+src\lib\api.ts (192:12)
+async fetchGroups
+src\app\groups\page.tsx (33:20)
+
+Console Error
+
+
+Erro ao buscar grupos do backend: "NETWORK_ERROR"
+
+src\lib\api.ts (194:13) @ fetchUserGroups
+
+
+  192 |     return await fetchApi('/api/groups');
+  193 |   } catch (error: any) {
+> 194 |     console.error('Erro ao buscar grupos do backend:', error.message);
+      |             ^
+  195 |     console.error('Tipo do erro:', error.name);
+  196 |     console.error('Erro completo:', error);
+  197 |     
+Call Stack
+5
+
+Show 3 ignore-listed frame(s)
+fetchUserGroups
+src\lib\api.ts (194:13)
+async fetchGroups
+src\app\groups\page.tsx (33:20)
+
+Tipo do erro: "Error"
+
+src\lib\api.ts (195:13) @ fetchUserGroups
+
+
+  193 |   } catch (error: any) {
+  194 |     console.error('Erro ao buscar grupos do backend:', error.message);
+> 195 |     console.error('Tipo do erro:', error.name);
+      |             ^
+  196 |     console.error('Erro completo:', error);
+  197 |     
+  198 |     // Se houve erro 401 (token inválido), tokens já foram limpos
+Call Stack
+5
+
+Show 3 ignore-listed frame(s)
+fetchUserGroups
+src\lib\api.ts (195:13)
+async fetchGroups
+src\app\groups\page.tsx (33:20)
+
+Error: NETWORK_ERROR
+
+src\lib\api.ts (156:13) @ eval
+
+
+  154 |     // Verificar se é um erro de rede
+  155 |     if (error.name === 'TypeError' && (error.message.includes('fetch failed') || error.message.includes('Failed to fetch'))) {
+> 156 |       throw new Error("NETWORK_ERROR");
+      |             ^
+  157 |     }
+  158 |     
+  159 |     throw error;
+Call Stack
+3
+
+eval
+src\lib\api.ts (156:13)
+async fetchUserGroups
+src\lib\api.ts (192:12)
+async fetchGroups
+src\app\groups\page.tsx (33:20)
+
+2025-07-03T10:18:38.783-03:00  INFO 25532 --- [fairpay] [nio-8090-exec-1] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring DispatcherServlet 'dispatcherServlet'
+2025-07-03T10:18:38.866-03:00  INFO 25532 --- [fairpay] [nio-8090-exec-1] o.s.web.servlet.DispatcherServlet        : Initializing Servlet 'dispatcherServlet'     
+2025-07-03T10:18:39.096-03:00  INFO 25532 --- [fairpay] [nio-8090-exec-1] o.s.web.servlet.DispatcherServlet        : Completed initialization in 226 ms
+2025-07-03T10:18:39.385-03:00 ERROR 25532 --- [fairpay] [nio-8090-exec-1] com.fairpay.security.AuthEntryPointJwt   : Erro de autenticação: Full authentication is required to access this resource
+2025-07-03T10:18:40.961-03:00 ERROR 25532 --- [fairpay] [io-8090-exec-10] com.fairpay.security.AuthEntryPointJwt   : Erro de autenticação: Full authentication is required to access this resource
+2025-07-03T10:18:43.004-03:00 ERROR 25532 --- [fairpay] [nio-8090-exec-4] com.fairpay.security.AuthEntryPointJwt   : Erro de autenticação: Full authentication is required to access this resource
+2025-07-03T10:18:43.737-03:00 ERROR 25532 --- [fairpay] [nio-8090-exec-5] com.fairpay.security.AuthEntryPointJwt   : Erro de autenticação: Full authentication is required to access this resource
+2025-07-03T10:18:44.759-03:00 ERROR 25532 --- [fairpay] [nio-8090-exec-6] com.fairpay.security.AuthEntryPointJwt   : Erro de autenticação: Full authentication is required to access this resource
+2025-07-03T10:18:46.794-03:00 ERROR 25532 --- [fairpay] [nio-8090-exec-7] com.fairpay.security.AuthEntryPointJwt   : Erro de autenticação: Full authentication is required to access this resource
+2025-07-03T10:18:50.551-03:00 ERROR 25532 --- [fairpay] [nio-8090-exec-1] com.fairpay.security.AuthEntryPointJwt   : Erro de autenticação: Full authentication is required to access this resource
+2025-07-03T10:18:51.584-03:00 ERROR 25532 --- [fairpay] [io-8090-exec-10] com.fairpay.security.AuthEntryPointJwt   : Erro de autenticação: Full authentication is required to access this resource
+2025-07-03T10:18:53.633-03:00 ERROR 25532 --- [fairpay] [nio-8090-exec-4] com.fairpay.security.AuthEntryPointJwt   : Erro de autenticação: Full authentication is required to access this resource
+2025-07-03T10:21:14.293-03:00 ERROR 25532 --- [fairpay] [nio-8090-exec-7] com.fairpay.security.AuthEntryPointJwt   : Erro de autenticação: Full authentication is required to access this resource
+2025-07-03T10:21:15.306-03:00 ERROR 25532 --- [fairpay] [nio-8090-exec-9] com.fairpay.security.AuthEntryPointJwt   : Erro de autenticação: Full authentication is required to access this resource
+2025-07-03T10:21:17.322-03:00 ERROR 25532 --- [fairpay] [nio-8090-exec-8] com.fairpay.security.AuthEntryPointJwt   : Erro de autenticação: Full authentication is required to access this resource
+2025-07-03T10:21:17.859-03:00 ERROR 25532 --- [fairpay] [io-8090-exec-10] com.fairpay.security.AuthEntryPointJwt   : Erro de autenticação: Full authentication is required to access this resource
+2025-07-03T10:21:18.893-03:00 ERROR 25532 --- [fairpay] [nio-8090-exec-3] com.fairpay.security.AuthEntryPointJwt   : Erro de autenticação: Full authentication is required to access this resource
+2025-07-03T10:21:20.922-03:00 ERROR 25532 --- [fairpay] [nio-8090-exec-4] com.fairpay.security.AuthEntryPointJwt   : Erro de autenticação: Full authentication is required to access this resource
+2025-07-03T10:21:28.394-03:00 ERROR 25532 --- [fairpay] [nio-8090-exec-6] com.fairpay.security.AuthEntryPointJwt   : Erro de autenticação: Full authentication is required to access this resource
+2025-07-03T10:21:29.407-03:00 ERROR 25532 --- [fairpay] [nio-8090-exec-7] com.fairpay.security.AuthEntryPointJwt   : Erro de autenticação: Full authentication is required to access this resource
+2025-07-03T10:21:31.436-03:00 ERROR 25532 --- [fairpay] [nio-8090-exec-9] com.fairpay.security.AuthEntryPointJwt   : Erro de autenticação: Full authentication is required to access this resource
+2025-07-03T10:21:31.990-03:00 ERROR 25532 --- [fairpay] [nio-8090-exec-8] com.fairpay.security.AuthEntryPointJwt   : Erro de autenticação: Full authentication is required to access this resource
+2025-07-03T10:21:33.013-03:00 ERROR 25532 --- [fairpay] [nio-8090-exec-1] com.fairpay.security.AuthEntryPointJwt   : Erro de autenticação: Full authentication is required to access this resource
+2025-07-03T10:21:35.042-03:00 ERROR 25532 --- [fairpay] [io-8090-exec-10] com.fairpay.security.AuthEntryPointJwt   : Erro de autenticação: Full authentication is required to access this resource
+2025-07-03T10:22:23.207-03:00 ERROR 25532 --- [fairpay] [nio-8090-exec-5] com.fairpay.security.AuthEntryPointJwt   : Erro de autenticação: Full authentication is required to access this resource
+2025-07-03T10:22:24.233-03:00 ERROR 25532 --- [fairpay] [nio-8090-exec-2] com.fairpay.security.AuthEntryPointJwt   : Erro de autenticação: Full authentication is required to access this resource
+2025-07-03T10:22:26.251-03:00 ERROR 25532 --- [fairpay] [nio-8090-exec-6] com.fairpay.security.AuthEntryPointJwt   : Erro de autenticação: Full authentication is required to access this resource
+2025-07-03T10:22:26.877-03:00 ERROR 25532 --- [fairpay] [nio-8090-exec-7] com.fairpay.security.AuthEntryPointJwt   : Erro de autenticação: Full authentication is required to access this resource
+2025-07-03T10:22:27.931-03:00 ERROR 25532 --- [fairpay] [nio-8090-exec-8] com.fairpay.security.AuthEntryPointJwt   : Erro de autenticação: Full authentication is required to access this resource
+2025-07-03T10:22:29.959-03:00 ERROR 25532 --- [fairpay] [nio-8090-exec-1] com.fairpay.security.AuthEntryPointJwt   : Erro de autenticação: Full authentication is required to access this resource
+2025-07-03T10:22:44.974-03:00 ERROR 25532 --- [fairpay] [nio-8090-exec-4] com.fairpay.security.AuthEntryPointJwt   : Erro de autenticação: Full authentication is required to access this resource
+2025-07-03T10:22:45.990-03:00 ERROR 25532 --- [fairpay] [nio-8090-exec-5] com.fairpay.security.AuthEntryPointJwt   : Erro de autenticação: Full authentication is required to access this resource
+2025-07-03T10:22:48.008-03:00 ERROR 25532 --- [fairpay] [nio-8090-exec-6] com.fairpay.security.AuthEntryPointJwt   : Erro de autenticação: Full authentication is required to access this resource
+2025-07-03T10:22:48.740-03:00 ERROR 25532 --- [fairpay] [nio-8090-exec-7] com.fairpay.security.AuthEntryPointJwt   : Erro de autenticação: Full authentication is required to access this resource
+2025-07-03T10:22:49.760-03:00 ERROR 25532 --- [fairpay] [nio-8090-exec-9] com.fairpay.security.AuthEntryPointJwt   : Erro de autenticação: Full authentication is required to access this resource
+2025-07-03T10:22:51.777-03:00 ERROR 25532 --- [fairpay] [nio-8090-exec-8] com.fairpay.security.AuthEntryPointJwt   : Erro de autenticação: Full authentication is required to access this resource

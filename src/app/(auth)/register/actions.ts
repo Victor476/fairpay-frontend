@@ -1,6 +1,6 @@
 "use server";
 
-import { fetchApi } from "@/lib/api";
+import { fetchPublicApi } from "@/lib/api";
 
 export async function registerUser(data: {
   name: string;
@@ -18,13 +18,13 @@ export async function registerUser(data: {
     }
 
     // Enviar todos os campos, incluindo confirmPassword
-    const result = await fetchApi("/auth/register", {
+    const result = await fetchPublicApi("/api/auth/register", {
       method: "POST",
       body: JSON.stringify({
         name: data.name,
         email: data.email,
         password: data.password,
-        confirmPassword: data.confirmPassword // Incluímos este campo também
+        confirmPassword: data.confirmPassword
       }),
     });
 

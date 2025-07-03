@@ -6,6 +6,7 @@ import { fetchUserGroups } from "@/lib/api";
 import { useAuth } from "@/contexts/AuthContext";
 import ProtectedRoute from "@/components/auth/ProtectedRoute";
 import GroupsList from "@/components/groups/GroupsList";
+import AcceptInviteModal from "@/components/groups/AcceptInviteModal";
 import LoadingSpinner from "@/components/ui/LoadingSpinner";
 import { Group } from "@/types/group";
 
@@ -13,10 +14,16 @@ export default function GroupsPage() {
   const [groups, setGroups] = useState<Group[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [isAcceptInviteModalOpen, setIsAcceptInviteModalOpen] = useState(false);
   const { user, logout } = useAuth();
 
   useEffect(() => {
-    fetchGroups();
+    // Aguardar um pouco para garantir que o AuthContext foi inicializado
+    const timer = setTimeout(() => {
+      fetchGroups();
+    }, 200);
+    
+    return () => clearTimeout(timer);
   }, []);
 
   const fetchGroups = async () => {
@@ -41,6 +48,12 @@ export default function GroupsPage() {
     } catch (error) {
       console.error("Erro ao fazer logout:", error);
     }
+  };
+
+  const handleInviteAccepted = (groupId?: number, groupName?: string) => {
+    console.log('🎉 Convite aceito!', { groupId, groupName });
+    // Recarregar grupos para mostrar o novo grupo
+    fetchGroups();
   };
 
   if (loading) {
@@ -86,6 +99,15 @@ export default function GroupsPage() {
             </div>
             <div className="flex items-center space-x-3">
               <button
+                onClick={() => setIsAcceptInviteModalOpen(true)}
+                className="inline-flex items-center px-3 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500"
+              >
+                <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+                </svg>
+                Aceitar Convite
+              </button>
+              <button
                 onClick={handleLogout}
                 className="inline-flex items-center px-3 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
               >
@@ -102,6 +124,13 @@ export default function GroupsPage() {
 
           <GroupsList groups={groups} />
         </div>
+
+        {/* Modal de Aceitar Convite */}
+        <AcceptInviteModal
+          isOpen={isAcceptInviteModalOpen}
+          onClose={() => setIsAcceptInviteModalOpen(false)}
+          onSuccess={handleInviteAccepted}
+        />
       </div>
     </ProtectedRoute>
   );
