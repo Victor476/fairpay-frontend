@@ -2,6 +2,7 @@ import { tokenUtils } from '@/utils/auth';
 import { authService } from '@/services/auth';
 import { CreateExpenseRequest, CreateExpenseResponse, Expense } from '@/types/expense';
 import { GroupInviteLinkRequest, GroupInviteLinkResponse, GroupJoinResponse } from '@/types/invite';
+import { PaymentRequest, PaymentResponse } from '@/types/payment';
 
 // Cache para evitar requisições duplicadas
 const requestCache = new Map<string, Promise<any>>();
@@ -586,7 +587,17 @@ export async function fetchGroupMembers(groupId: string): Promise<any[]> {
   try {
     const response = await fetchApi(`/api/groups/${groupId}/members`);
     console.log('✅ [fetchGroupMembers] Membros encontrados:', response);
-    return Array.isArray(response) ? response : [response];
+    
+    // Garantir que retorna um array
+    const members = Array.isArray(response) ? response : (response ? [response] : []);
+    
+    // Adicionar campos padrão se não existirem
+    return members.map(member => ({
+      ...member,
+      role: member.role || 'member',
+      joinedAt: member.joinedAt || new Date().toISOString(),
+      isActive: member.isActive !== undefined ? member.isActive : true
+    }));
     
   } catch (error: any) {
     console.error('❌ [fetchGroupMembers] Erro ao buscar membros:', error);
@@ -726,6 +737,84 @@ export async function acceptGroupInvite(token: string): Promise<GroupJoinRespons
       throw new Error('Convite inválido ou você já é membro deste grupo.');
     } else {
       throw new Error(error.message || 'Erro ao aceitar convite. Tente novamente.');
+    }
+  }
+}
+
+// Funções relacionadas a pagamentos
+export async function createPayment(paymentData: PaymentRequest): Promise<PaymentResponse> {
+  // Verificar se estamos no lado do cliente
+  if (typeof window === 'undefined') {
+    console.warn('createPayment: Chamada no servidor (SSR), rejeitando');
+    throw new Error('Esta operação só pode ser realizada no cliente');
+  }
+
+  console.log('💰 [createPayment] Registrando pagamento:', paymentData);
+
+  try {
+    const response = await fetchApi(`/api/payments`, {
+      method: 'POST',
+      body: JSON.stringify(paymentData)
+    });
+    
+    console.log('✅ [createPayment] Pagamento registrado:', response);
+    return response;
+    
+  } catch (error: any) {
+    console.error('❌ [createPayment] Erro ao registrar pagamento:', error);
+    
+    if (error.message === 'UNAUTHORIZED') {
+      throw new Error('Sua sessão expirou. Faça login novamente.');
+    } else if (error.message === 'NETWORK_ERROR') {
+      throw new Error('Erro de conexão. Verifique sua internet e tente novamente.');
+    } else if (error.message.includes('403')) {
+      throw new Error('Você não tem permissão para registrar pagamentos neste grupo.');
+    } else if (error.message.includes('400')) {
+      throw new Error('Dados inválidos. Verifique os campos obrigatórios.');
+    } else {
+      throw new Error(error.message || 'Erro ao registrar pagamento. Tente novamente.');
+    }
+  }
+}
+
+// Funções relacionadas a pagamentos manuais
+export async function registerPayment(groupId: string, paymentData: PaymentRequest): Promise<PaymentResponse> {
+  // Verificar se estamos no lado do cliente
+  if (typeof window === 'undefined') {
+    console.warn('registerPayment: Chamada no servidor (SSR), rejeitando');
+    throw new Error('Esta operação só pode ser realizada no cliente');
+  }
+
+  if (!groupId) {
+    throw new Error("ID do grupo é obrigatório");
+  }
+
+  console.log('💳 [registerPayment] Registrando pagamento:', { groupId, paymentData });
+
+  try {
+    const response = await fetchApi(`/api/groups/${groupId}/payments`, {
+      method: 'POST',
+      body: JSON.stringify(paymentData)
+    });
+    
+    console.log('✅ [registerPayment] Pagamento registrado:', response);
+    return response;
+    
+  } catch (error: any) {
+    console.error('❌ [registerPayment] Erro ao registrar pagamento:', error);
+    
+    if (error.message === 'UNAUTHORIZED') {
+      throw new Error('Sua sessão expirou. Faça login novamente.');
+    } else if (error.message === 'NETWORK_ERROR') {
+      throw new Error('Erro de conexão. Verifique sua internet e tente novamente.');
+    } else if (error.message.includes('403')) {
+      throw new Error('Você não tem permissão para registrar pagamentos neste grupo.');
+    } else if (error.message.includes('400')) {
+      throw new Error('Dados inválidos. Verifique os campos obrigatórios.');
+    } else if (error.message.includes('404')) {
+      throw new Error('Grupo não encontrado.');
+    } else {
+      throw new Error(error.message || 'Erro ao registrar pagamento. Tente novamente.');
     }
   }
 }

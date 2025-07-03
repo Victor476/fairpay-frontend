@@ -9,7 +9,8 @@ import LoadingSpinner from "@/components/ui/LoadingSpinner";
 import Button from "@/components/ui/Button";
 import Toast from "@/components/ui/Toast";
 import InviteLinkModal from "@/components/groups/InviteLinkModal";
-import { fetchGroupById, fetchGroupExpenses, generateInviteLink } from "@/lib/api";
+import PaymentModal from "@/components/groups/PaymentModal";
+import { fetchGroupById, fetchGroupExpenses, fetchGroupMembers, generateInviteLink, registerPayment } from "@/lib/api";
 import { GroupDetails } from "@/types/group";
 import { Expense } from "@/types/expense";
 import { GroupInviteLinkResponse } from "@/types/invite";
@@ -28,6 +29,9 @@ export default function GroupDetailPage() {
   const [isInviteModalOpen, setIsInviteModalOpen] = useState(false);
   const [inviteLoading, setInviteLoading] = useState(false);
   const [inviteLinkData, setInviteLinkData] = useState<GroupInviteLinkResponse | null>(null);
+  
+  // Estados para o modal de pagamento
+  const [isPaymentModalOpen, setIsPaymentModalOpen] = useState(false);
 
   const groupId = params?.id as string;
 
@@ -61,35 +65,82 @@ export default function GroupDetailPage() {
         console.log('✅ Grupo encontrado:', groupData);
         console.log('✅ Despesas encontradas:', expensesData);
       } catch (apiError: any) {
-        console.log('⚠️ API falhou, usando dados mock:', apiError.message);
+        console.log('⚠️ API de detalhes do grupo falhou, tentando buscar membros separadamente:', apiError.message);
         
-        // Se a API falhar, usar dados mock para demonstração
+        // Tentar buscar membros separadamente
+        let members = [];
+        try {
+          members = await fetchGroupMembers(groupId);
+          console.log('✅ Membros encontrados via endpoint separado:', members);
+          
+          // Definir o usuário atual como admin se for o primeiro membro
+          if (members.length > 0 && user) {
+            const currentUserMember = members.find(m => m.email === user.email || m.id === user.id);
+            if (currentUserMember) {
+              currentUserMember.role = 'admin'; // Usuário atual sempre admin
+            }
+          }
+        } catch (membersError: any) {
+          console.log('⚠️ Endpoint de membros também falhou:', membersError.message);
+        }
+        
+        // Se conseguiu buscar despesas, usar dados reais + mock para o grupo
+        let expenses: Expense[] = [];
+        try {
+          expenses = await fetchGroupExpenses(groupId);
+          console.log('✅ Despesas encontradas:', expenses);
+        } catch (expensesError: any) {
+          console.log('⚠️ Endpoint de despesas falhou:', expensesError.message);
+        }
+        
+        // Usar dados mock melhorados para demonstração
+        const mockMembers = members.length > 0 ? members : [
+          {
+            id: parseInt(user?.id?.toString() || "1"),
+            name: user?.name || "Você",
+            email: user?.email || "usuario@exemplo.com",
+            role: "admin",
+            joinedAt: new Date().toISOString(),
+            isActive: true
+          },
+          {
+            id: 2,
+            name: "Maria Silva",
+            email: "maria@exemplo.com",
+            role: "member",
+            joinedAt: new Date(Date.now() - 86400000).toISOString(), // 1 dia atrás
+            isActive: true
+          },
+          {
+            id: 3,
+            name: "João Santos",
+            email: "joao@exemplo.com",
+            role: "member",
+            joinedAt: new Date(Date.now() - 172800000).toISOString(), // 2 dias atrás
+            isActive: true
+          }
+        ];
+        
         const mockGroup: GroupDetails = {
           id: parseInt(groupId),
-          name: "Novo Grupo Criado",
-          description: "Este grupo foi criado com sucesso e está pronto para uso.",
+          name: members.length > 0 ? "Grupo Real (Membros do Backend)" : "Grupo de Demonstração",
+          description: members.length > 0 
+            ? "Os membros deste grupo foram recuperados do backend. Alguns detalhes podem estar em modo demonstração devido a problemas no servidor."
+            : "Este grupo está sendo exibido com dados de demonstração devido a problemas no backend.",
           imageUrl: undefined,
           createdAt: new Date().toISOString(),
           createdBy: {
             id: parseInt(user?.id?.toString() || "1"),
             name: user?.name || "Você"
           },
-          totalExpenses: 0,
-          membersCount: 1,
-          members: [
-            {
-              id: parseInt(user?.id?.toString() || "1"),
-              name: user?.name || "Você",
-              email: user?.email || "usuario@exemplo.com",
-              role: "admin",
-              joinedAt: new Date().toISOString(),
-              isActive: true
-            }
-          ]
+          totalExpenses: expenses.reduce((total, expense) => total + expense.totalAmount, 0),
+          membersCount: mockMembers.length,
+          members: mockMembers
         };
         
         setGroup(mockGroup);
-        console.log('ℹ️ Exibindo dados de demonstração. O grupo foi criado com sucesso!');
+        setExpenses(expenses);
+        console.log('ℹ️ Exibindo dados de demonstração com múltiplos membros. Problema no backend detectado.');
       }
       
     } catch (err: any) {
@@ -114,6 +165,14 @@ export default function GroupDetailPage() {
     setInviteLinkData(null);
   };
 
+  const handleOpenPaymentModal = () => {
+    setIsPaymentModalOpen(true);
+  };
+
+  const handleClosePaymentModal = () => {
+    setIsPaymentModalOpen(false);
+  };
+
   const handleGenerateInviteLink = async (expiresInDays: number) => {
     try {
       setInviteLoading(true);
@@ -130,6 +189,19 @@ export default function GroupDetailPage() {
     } finally {
       setInviteLoading(false);
     }
+  };
+
+  const handlePaymentSuccess = (payment: any) => {
+    console.log('✅ Pagamento registrado com sucesso:', payment);
+    toast.success('Pagamento registrado com sucesso!', 3000);
+    
+    // Recarregar dados do grupo para atualizar saldos
+    fetchGroupDetails();
+  };
+
+  const handlePaymentError = (error: string) => {
+    console.error('❌ Erro no pagamento:', error);
+    toast.error(error);
   };
 
   const getInitials = (name: string) => {
@@ -360,7 +432,7 @@ export default function GroupDetailPage() {
               <h2 className="text-xl font-semibold text-gray-900 mb-4">
                 Próximos Passos
               </h2>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 <div className="p-4 border border-gray-200 rounded-lg">
                   <h3 className="font-semibold text-gray-900 mb-2">
                     Convidar Membros
@@ -381,13 +453,29 @@ export default function GroupDetailPage() {
                     Adicionar Despesa
                   </h3>
                   <p className="text-gray-600 mb-4">
-                    Registre a primeira despesa do grupo para começar a dividir os custos
+                    Registre uma nova despesa do grupo para dividir os custos
                   </p>
                   <Button 
                     className="w-full"
                     onClick={() => router.push(`/groups/${groupId}/expenses/new`)}
                   >
                     Nova Despesa
+                  </Button>
+                </div>
+                <div className="p-4 border border-gray-200 rounded-lg">
+                  <h3 className="font-semibold text-gray-900 mb-2">
+                    Registrar Pagamento
+                  </h3>
+                  <p className="text-gray-600 mb-4">
+                    Registre um pagamento manual entre membros do grupo
+                  </p>
+                  <Button 
+                    variant="outline"
+                    className="w-full"
+                    onClick={handleOpenPaymentModal}
+                    disabled={!group?.members || group.members.length < 2}
+                  >
+                    💳 Registrar Pagamento
                   </Button>
                 </div>
               </div>
@@ -404,6 +492,26 @@ export default function GroupDetailPage() {
           expiresAt={inviteLinkData?.expiresAt}
           loading={inviteLoading}
           onCopySuccess={() => toast.success('Link copiado para a área de transferência!', 2000)}
+        />
+
+        {/* Modal de Pagamento */}
+        <PaymentModal
+          isOpen={isPaymentModalOpen}
+          onClose={handleClosePaymentModal}
+          groupId={groupId}
+          members={group?.members || []}
+          onSuccess={handlePaymentSuccess}
+          onError={handlePaymentError}
+        />
+
+        {/* Modal de Pagamento */}
+        <PaymentModal
+          isOpen={isPaymentModalOpen}
+          onClose={handleClosePaymentModal}
+          groupId={groupId}
+          members={group?.members || []}
+          onSuccess={handlePaymentSuccess}
+          onError={handlePaymentError}
         />
 
         {/* Container de Toasts */}

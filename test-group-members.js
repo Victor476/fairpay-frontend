@@ -12,8 +12,8 @@ async function testGroupEndpoint() {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        email: 'a@a.com',
-        password: 'a'
+        email: 'joao.teste@example.com',
+        password: 'senha123'
       })
     });
     
